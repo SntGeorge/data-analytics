@@ -1,12 +1,12 @@
 -- ============================================================
 -- Q1 · Monthly Revenue, Orders, AOV
 -- Dataset: bigquery-public-data.thelook_ecommerce
--- Goal: помесячная динамика выручки, заказов, AOV и числа
---       уникальных клиентов. Базовая метрика любого e-commerce.
+-- Goal: monthly trend of revenue, orders, AOV and unique
+--       customers. The foundational metric of any e-commerce.
 -- ============================================================
 
 WITH order_revenue AS (
-  -- Считаем выручку каждого заказа: сумма позиций минус возвраты
+  -- Aggregate line items up to order level (cancelled/returned excluded)
   SELECT
     o.order_id,
     o.user_id,

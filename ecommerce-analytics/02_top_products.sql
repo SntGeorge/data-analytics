@@ -1,8 +1,8 @@
 -- ============================================================
 -- Q2 · Top Categories — Pareto Analysis
 -- Dataset: bigquery-public-data.thelook_ecommerce
--- Goal: распределение выручки по категориям, доля от total
---       и накопленная доля (Pareto / 80-20).
+-- Goal: revenue distribution across categories — share of total
+--       and running share (Pareto / 80-20 view).
 -- ============================================================
 
 WITH category_revenue AS (
@@ -24,9 +24,9 @@ SELECT
   category,
   orders,
   ROUND(revenue, 2)                                                AS revenue_usd,
-  -- window function: считаем total по всему датасету и делим
+  -- window function: total across the whole result, used as denominator
   ROUND(revenue / SUM(revenue) OVER () * 100, 2)                   AS pct_of_total,
-  -- накопленная доля для классического Pareto
+  -- running share for the classic Pareto view
   ROUND(SUM(revenue) OVER (ORDER BY revenue DESC)
         / SUM(revenue) OVER () * 100, 2)                           AS cumulative_pct
 FROM category_revenue

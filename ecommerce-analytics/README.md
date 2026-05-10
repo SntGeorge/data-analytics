@@ -1,12 +1,12 @@
 # TheLook E-commerce — SQL Analytics
 
-Аналитика онлайн-магазина одежды на публичном датасете `bigquery-public-data.thelook_ecommerce` (синтетика, моделирующая реальный e-commerce: пользователи, заказы, позиции, товары, события). Три ключевых вопроса: рост выручки и её драйверы, концентрация продаж по категориям, retention клиентов.
+SQL analytics on `bigquery-public-data.thelook_ecommerce` — a public synthetic dataset modeling a real online clothing store (users, orders, items, products, events). Three core business questions: revenue growth and its drivers, sales concentration by category, customer retention.
 
 **📊 Live dashboard:** [TheLook E-commerce — Revenue Overview](https://datastudio.google.com/reporting/2a357e58-7442-4bd3-b10b-ccd5ca18d7ff)
 
-**Стек:** BigQuery (SQL) · Python (`google-cloud-bigquery`) для воспроизводимости · Looker Studio (3-страничный дашборд: revenue trend, Pareto, cohort retention)
+**Stack:** BigQuery (SQL) · Python (`google-cloud-bigquery`) for reproducibility · Looker Studio (3-page dashboard: revenue trend, Pareto, cohort retention)
 
-## Воспроизведение
+## How to reproduce
 
 ```bash
 python -m venv venv && source venv/bin/activate
@@ -21,63 +21,63 @@ python run_query.py 01_monthly_revenue.sql --csv
 
 ## Q1 · Monthly Revenue, Orders, AOV
 
-**Бизнес-вопрос:** Как растёт магазин по выручке, заказам и среднему чеку (AOV) по месяцам?
+**Business question:** How is the store growing in revenue, orders, and average order value (AOV) month over month?
 
-**Файлы:** [`01_monthly_revenue.sql`](01_monthly_revenue.sql) · [`01_monthly_revenue.csv`](01_monthly_revenue.csv)
+**Files:** [`01_monthly_revenue.sql`](01_monthly_revenue.sql) · [`01_monthly_revenue.csv`](01_monthly_revenue.csv)
 
-**Метод:** CTE с агрегацией позиций до уровня заказа → группировка по месяцу. Исключены отменённые и возвращённые заказы.
+**Method:** CTE aggregating line items up to the order level → group by month. Cancelled and returned orders excluded.
 
-**Главные находки:**
+**Key findings:**
 
-| Метрика | Янв 2023 | Апр 2026 | Рост |
+| Metric | Jan 2023 | Apr 2026 | Growth |
 |---|---|---|---|
-| Заказы / мес | 849 | 4 951 | ×5.8 |
-| Выручка / мес | $67k | $429k | ×6.4 |
+| Orders / month | 849 | 4,951 | ×5.8 |
+| Revenue / month | $67k | $429k | ×6.4 |
 | AOV | $79 | $87 | +10% |
-| Уник. клиенты | 846 | 4 516 | ×5.3 |
+| Unique customers | 846 | 4,516 | ×5.3 |
 
-**Инсайт:** Бизнес растёт ×6 за 3 года, но **AOV почти не двигается** — рост идёт за счёт количества клиентов, не за счёт повышения чека. Соотношение `orders/customers ≈ 1.1` означает низкий repeat rate. Следующий уровень анализа — когорты (Q3).
+**Insight:** The business grew ×6 in 3 years, but **AOV barely moved** — growth comes from customer acquisition, not from raising the basket size. The `orders/customers ≈ 1.1` ratio means very low repeat rate. The next level of analysis — cohorts (Q3).
 
 ---
 
 ## Q2 · Top Categories — Pareto Analysis
 
-**Бизнес-вопрос:** Какие категории товаров приносят 80% выручки? Где сосредоточен бизнес?
+**Business question:** Which product categories drive 80% of revenue? Where is the business concentrated?
 
-**Файлы:** [`02_top_products.sql`](02_top_products.sql) · [`02_top_products.csv`](02_top_products.csv)
+**Files:** [`02_top_products.sql`](02_top_products.sql) · [`02_top_products.csv`](02_top_products.csv)
 
-**Метод:** `JOIN order_items × products × orders` → агрегат по категории → window functions для расчёта доли и накопленной доли (`SUM(...) OVER (ORDER BY revenue DESC)`).
+**Method:** `JOIN order_items × products × orders` → aggregate by category → window functions for share and cumulative share (`SUM(...) OVER (ORDER BY revenue DESC)`).
 
-**Главные находки:**
+**Key findings:**
 
-- **80% выручки приносят 13 из 26 категорий** — половина каталога. Pareto не идеальный: бизнес умеренно диверсифицирован.
-- **Топ-3:** Outerwear & Coats (12.5%), Jeans (11.6%), Sweaters (7.6%) — суммарно 31.7%.
-- Outerwear лидирует по выручке, но это **сезонный** товар — на отдельной странице дашборда смотрим помесячную динамику по категориям.
+- **80% of revenue comes from 13 of 26 categories** — half the catalog. Not a strict Pareto: the business is moderately diversified.
+- **Top 3:** Outerwear & Coats (12.5%), Jeans (11.6%), Sweaters (7.6%) — combined 31.7%.
+- Outerwear leads in revenue but is a **seasonal** product — monthly category dynamics are tracked on a separate dashboard page.
 
-**Что в SQL:** window functions без `PARTITION BY` работают по всему результату (`SUM(x) OVER ()` = total, `SUM(x) OVER (ORDER BY x DESC)` = running total). Альтернатива двум подзапросам.
+**SQL note:** window functions without `PARTITION BY` operate over the entire result (`SUM(x) OVER ()` = total, `SUM(x) OVER (ORDER BY x DESC)` = running total). A clean alternative to two subqueries.
 
 ---
 
 ## Q3 · Cohort Retention
 
-**Бизнес-вопрос:** Какая доля клиентов возвращается за повторной покупкой в следующие 12 месяцев после первой? Это базовая метрика unit-экономики.
+**Business question:** What share of customers returns for repeat purchases in the 12 months after their first order? A foundational unit-economics metric.
 
-**Файлы:** [`03_cohort_retention.sql`](03_cohort_retention.sql)
+**Files:** [`03_cohort_retention.sql`](03_cohort_retention.sql)
 
-**Метод:** Two-stage CTE — определяем `cohort_month` каждого клиента (месяц первой покупки) → к каждому заказу клеим cohort + считаем offset через `DATE_DIFF(..., MONTH)` → доля активных в каждом offset через `MAX(COUNT(...)) OVER (PARTITION BY cohort_month)`.
+**Method:** Two-stage CTE — derive each customer's `cohort_month` (month of first purchase) → join cohort onto every order and compute offset via `DATE_DIFF(..., MONTH)` → share of active users per offset via `MAX(COUNT(...)) OVER (PARTITION BY cohort_month)`.
 
-**Главные находки:**
+**Key findings:**
 
-- Месяц 0 — 100% по определению (это и есть момент первой покупки).
-- M1–M12 — стабильно **1–2.5%**. Никакого decay curve.
+- Month 0 = 100% by definition (the moment of first purchase).
+- M1–M12 — steady **1–2.5%**. No decay curve.
 
-**Честный комментарий по данным.** Retention ~1–2% нетипично низкий для e-com одежды. Реалистичный M1 retention для fashion ~8–15%, и кривая обычно убывает (M1 > M2 > M3 → стабилизация). У нас плато — это **признак синтетических данных**: TheLook генерирует повторные покупки случайно, без поведенческого моделирования. SQL-паттерн и метрика корректны, проблема в источнике. На реальных данных тот же запрос даст осмысленную retention-кривую.
+**Honest note on the data.** Retention of ~1–2% is unrealistically low for apparel e-commerce. Realistic M1 retention for fashion is ~8–15%, and the curve usually decays (M1 > M2 > M3 → stabilization). The flat plateau here is a **signal of synthetic data**: TheLook generates repeat purchases at random, without behavioral modeling. The SQL pattern and the metric are correct; the source data is the limitation. On real data the same query would produce a meaningful retention curve.
 
 ---
 
-## Использованные SQL-техники
+## SQL techniques used
 
-- CTE (`WITH ... AS`) для многоступенчатых трансформаций
-- `JOIN` 1:N с агрегацией до уровня заказа
+- CTE (`WITH ... AS`) for multi-stage transformations
+- `JOIN` 1:N with aggregation up to the order level
 - Window functions: `SUM() OVER ()` (total share), `SUM() OVER (ORDER BY ... DESC)` (running total / Pareto), `MAX() OVER (PARTITION BY ...)` (cohort-relative %)
-- Date arithmetic: `DATE_TRUNC`, `DATE_DIFF`, `MIN(... ) GROUP BY user_id` для cohort-month
+- Date arithmetic: `DATE_TRUNC`, `DATE_DIFF`, `MIN(...) GROUP BY user_id` for cohort-month
