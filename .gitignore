@@ -1,0 +1,31 @@
+# Python environment
+venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Claude tooling
+.claude/
+CLAUDE.md
+
+# Internal planning notes (kept locally)
+ROADMAP.md
+
+# Test scratch
+test.ipynb
+senior_DE/
+
+# Projects not ready for public view
+week1-sql-bi/
+week2-python-etl/
+week3-engineering/
+week4-freelance/
