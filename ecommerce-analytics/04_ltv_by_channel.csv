@@ -1,0 +1,6 @@
+traffic_source,total_users,converted_users,conversion_rate_pct,avg_ltv_paying,avg_ltv_all_users,total_revenue_usd
+Email,2325,1600,68.82,127.56,87.78,204097.99
+Display,1797,1199,66.72,126.4,84.34,151550.27
+Search,32836,21748,66.23,124.04,82.15,2697575.0
+Organic,7099,4701,66.22,122.71,81.26,576840.27
+Facebook,2824,1859,65.83,119.75,78.83,222610.97
