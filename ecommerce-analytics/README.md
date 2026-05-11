@@ -75,9 +75,40 @@ python run_query.py 01_monthly_revenue.sql --csv
 
 ---
 
+## Q4 · Customer LTV by Acquisition Channel
+
+**Business question:** Which acquisition channels bring high-value customers? Where does marketing spend pay back, and where doesn't it?
+
+**File:** [`04_ltv_by_channel.sql`](04_ltv_by_channel.sql)
+
+**Method:** `LEFT JOIN` of users with their orders (keeping non-buyers in the result for an honest conversion rate), aggregate revenue per user, then group by `traffic_source` with two LTV variants — "paying-only" (channel quality) and "all-users" (channel ROI).
+
+**Key findings:**
+
+| Channel | Volume | Conv % | LTV (paying) | LTV (all users) | Verdict |
+|---|---|---|---|---|---|
+| Email | 2,325 | **68.8%** | **$127.56** | **$87.78** | Best efficiency — scale it |
+| Display | 1,797 | 66.7% | $126.40 | $84.34 | Strong paid channel |
+| Search | 32,836 | 66.2% | $124.04 | $82.15 | The volume engine — 70% of traffic |
+| Organic | 7,099 | 66.2% | $122.71 | $81.26 | Healthy organic baseline |
+| Facebook | 2,824 | 65.8% | $119.75 | $78.83 | Weakest — investigate or reduce |
+
+- **Email leads on every metric** — highest conversion (68.8%) and highest LTV ($127). Mostly re-engagement / remarketing — should scale.
+- **Search owns the volume** (~70% of total acquisition). Defensive moat: cutting this budget would shrink the business.
+- **Display beats Facebook** on both LTV and conversion — reallocate some FB spend into Display.
+- **Facebook is the weakest paid channel** — worth a deeper dive into audiences, creatives, and CPA before pulling budget.
+
+**Honest note on the data.** Conversion rates of 65–69% across every channel are unrealistically high for any real e-commerce (typical industry: 1–4%). This is a known artifact of TheLook's synthetic generator. The **relative ordering of channels and the method are valid**; absolute conversion numbers should be re-validated on production data.
+
+**SQL technique notes:** `LEFT JOIN` is critical — using `INNER JOIN` here would silently drop non-converters and inflate every conversion rate to 100%. The pattern `AVG(IF(orders > 0, revenue, NULL))` cleanly averages over paying customers only, since `AVG()` ignores NULLs.
+
+---
+
 ## SQL techniques used
 
 - CTE (`WITH ... AS`) for multi-stage transformations
 - `JOIN` 1:N with aggregation up to the order level
+- `LEFT JOIN` to preserve non-converting users for honest conversion-rate calculations
 - Window functions: `SUM() OVER ()` (total share), `SUM() OVER (ORDER BY ... DESC)` (running total / Pareto), `MAX() OVER (PARTITION BY ...)` (cohort-relative %)
 - Date arithmetic: `DATE_TRUNC`, `DATE_DIFF`, `MIN(...) GROUP BY user_id` for cohort-month
+- `COUNTIF`, `SAFE_DIVIDE`, `AVG(IF(...))` for clean conditional aggregations
