@@ -36,6 +36,26 @@ A daily Python ETL pipeline that pulls the top cryptocurrencies from the CoinGec
 | BI / Visualization | Looker Studio |
 | Web analytics | Google Analytics 4 |
 
+## Setup (to reproduce locally)
+
+```bash
+git clone https://github.com/SntGeorge/data-analytics.git
+cd data-analytics
+
+python3 -m venv venv && source venv/bin/activate
+pip install -r requirements.txt
+
+# Authenticate with Google Cloud (one-time, opens a browser)
+gcloud auth application-default login
+gcloud auth application-default set-quota-project <YOUR_GCP_PROJECT>
+```
+
+Each project folder contains its own README with run instructions.
+
+## License
+
+[MIT](LICENSE) — code and SQL are free to reuse and adapt.
+
 ## Contact
 
 trosman1999@gmail.com

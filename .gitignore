@@ -4,6 +4,15 @@ __pycache__/
 *.pyc
 *.pyo
 
+# Secrets — environment files and credentials
+.env
+.env.local
+.env.*.local
+*.env
+credentials.json
+*-credentials.json
+service-account*.json
+
 # OS
 .DS_Store
 Thumbs.db
@@ -30,4 +39,3 @@ week1-sql-bi/
 week2-python-etl/
 week3-engineering/
 week4-freelance/
-

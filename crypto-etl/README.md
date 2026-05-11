@@ -2,7 +2,9 @@
 
 A daily ETL pipeline that pulls the top cryptocurrencies from the public CoinGecko API, transforms the payload with pandas, and loads a snapshot into BigQuery.
 
-**Stack:** Python (`requests`, `pandas`, `google-cloud-bigquery`, `python-dotenv`) · CoinGecko public API · BigQuery
+**📊 Live dashboard:** [Crypto Market Snapshot — Looker Studio](https://datastudio.google.com/reporting/31a03591-94c2-4c0c-a421-c61cbe946b4c)
+
+**Stack:** Python (`requests`, `pandas`, `google-cloud-bigquery`, `python-dotenv`) · CoinGecko public API · BigQuery (day-partitioned table + views) · Looker Studio (responsive dashboard)
 
 ## What it does
 
