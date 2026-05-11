@@ -18,14 +18,21 @@ Marketing analytics with two layers: native Looker Studio connector dashboard + 
 - [Project folder & SQL](ga4-marketing-dashboard/)
 - [Live Looker Studio dashboard](https://datastudio.google.com/reporting/57a660f3-fbfb-4057-9857-6826357ed4a2)
 
+### Crypto ETL — CoinGecko → BigQuery
+
+A daily Python ETL pipeline that pulls the top cryptocurrencies from the CoinGecko public API, transforms with pandas, and loads into a day-partitioned BigQuery table via idempotent partition writes. Three SQL views on top: top 24h movers, market-cap dominance, and distance from all-time high.
+
+- [Project folder, ETL code & SQL](crypto-etl/)
+
 *More projects in progress.*
 
 ## Stack
 
 | Layer | Tools |
 |---|---|
-| SQL / DWH | BigQuery (incl. GA4 export), PostgreSQL |
-| Python | pandas, numpy, google-cloud-bigquery |
+| SQL / DWH | BigQuery (incl. GA4 export, partitioned & clustered tables), PostgreSQL |
+| Python | pandas, requests, google-cloud-bigquery, python-dotenv |
+| ETL patterns | Idempotent partition loads, layered CTEs, BigQuery views |
 | BI / Visualization | Looker Studio |
 | Web analytics | Google Analytics 4 |
 
