@@ -23,7 +23,7 @@ Marketing analytics with two layers: native Looker Studio connector dashboard + 
 A daily Python ETL pipeline that pulls the top cryptocurrencies from the CoinGecko public API, transforms with pandas, and loads into a day-partitioned BigQuery table via idempotent partition writes. Three SQL views on top: top 24h movers, market-cap dominance, and distance from all-time high.
 
 - [Project folder, ETL code & SQL](crypto-etl/)
-
+- [Live Looker Studio dashboard](https://datastudio.google.com/u/0/reporting/31a03591-94c2-4c0c-a421-c61cbe946b4c/page/h9qxF)
 *More projects in progress.*
 
 ## Stack
