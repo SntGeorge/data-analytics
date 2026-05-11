@@ -24,6 +24,7 @@ A daily Python ETL pipeline that pulls the top cryptocurrencies from the CoinGec
 
 - [Project folder, ETL code & SQL](crypto-etl/)
 - [Live Looker Studio dashboard](https://datastudio.google.com/u/0/reporting/31a03591-94c2-4c0c-a421-c61cbe946b4c/page/h9qxF)
+  
 *More projects in progress.*
 
 ## Stack
