@@ -1,8 +1,6 @@
-# Data Portfolio
+# Projects
 
 Hands-on data work — SQL on cloud data warehouses, ETL in Python, BI dashboards.
-
-## Projects
 
 ### TheLook E-commerce — SQL Analytics
 
